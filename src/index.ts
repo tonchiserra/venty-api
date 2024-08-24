@@ -1,9 +1,10 @@
 import express from 'express'
 import cors from 'cors'
-// import serverless from 'serverless-http'
+import serverless from 'serverless-http'
 
-import { config } from './config/config.js'
-import { exampleRouter } from './example/example.routes.js'
+import { config } from './config/config'
+import { eventRouter } from './event/event.routes'
+import { userRouter } from './user/user.routes'
 
 class Server {
     public app: express.Application
@@ -23,8 +24,8 @@ class Server {
     }
 
     private routes() {
-        // Add here your routes
-        this.app.use('/example', exampleRouter)
+        this.app.use('/events', eventRouter)
+        this.app.use('/users', userRouter)
         this.app.use('/*', (_, res) => res.sendStatus(404))
     }
 
@@ -38,4 +39,4 @@ class Server {
 const server = new Server()
 if(config.APP.IS_DEV) server.listen()
 
-// export const handler = serverless(server.app)
+export const handler = serverless(server.app)
