@@ -2,9 +2,9 @@ import express from 'express'
 import cors from 'cors'
 import serverless from 'serverless-http'
 
-import { config } from './config/config'
-import { eventRouter } from './event/event.routes'
-import { userRouter } from './user/user.routes'
+import { config } from './config/config.js'
+import { eventRouter } from './event/event.routes.js'
+import { userRouter } from './user/user.routes.js'
 
 class Server {
     public app: express.Application
