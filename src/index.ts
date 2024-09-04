@@ -20,7 +20,8 @@ class Server {
     private config() {
         this.app.set('PORT', this.PORT)
         this.app.use(express.json())
-        this.app.use(cors({ origin: config.APP.ALLOWED_ORIGINGS }))
+        // this.app.use(cors({ origin: config.APP.ALLOWED_ORIGINGS }))
+        this.app.use(cors())
     }
 
     private routes() {

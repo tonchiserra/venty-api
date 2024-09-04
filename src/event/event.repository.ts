@@ -9,7 +9,10 @@ export class EventRepository implements Repository<Event> {
     public async add(item: Event): Promise<Event | undefined> {
         const putCommand = new PutCommand({
             TableName: this.tableName,
-            Item: item
+            Item: {
+                PKevents: item.id,
+                ...item
+            }
         })
 
         await dynamo.send(putCommand)

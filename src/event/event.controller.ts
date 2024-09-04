@@ -1,15 +1,50 @@
 import { ExpressMiddleware } from '../config/AppInterface.js'
 import { EventRepository } from './event.repository.js'
-import { Event } from './event.entity.js'
+import { Event, IEvent, IEventDate } from './event.entity.js'
 
 const repository = new EventRepository()
 
-const sanitizeInput: ExpressMiddleware = async (_, __, next) => {
+const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
+    const sanitizedDates: IEventDate[] = !!!req.body.dates ? undefined : req.body.dates.map((date: IEventDate) => {
+        let sanitizedDate: IEventDate = {
+            id: date.id,
+            date: new Date(date.date),
+            startsAt: new Date(date.startsAt),
+            endsAt: new Date(date.endsAt),
+            totalTickets: date.totalTickets,
+            availableTickets: date.availableTickets,
+            price: date.price
+        }
+
+        return sanitizedDate
+    })
+
+    const sanitizedInput: IEvent = {
+        id: req.body.id,
+        title: req.body.title,
+        description: req.body.description,
+        images: req.body.images,
+        dates: sanitizedDates,
+        location: req.body.location,
+        companyId: req.body.companyId,
+        categories: req.body.categories,
+        status: req.body.status,
+        cta: req.body.cta
+    }
+
+    Object.keys(sanitizedInput).forEach((key) => {
+        if (Object(sanitizedInput)[key] === undefined) {
+            delete Object(sanitizedInput)[key]
+        }
+    })
+
+    req.body.payload = sanitizedInput
+
     next()
 }
 
 const add: ExpressMiddleware = async (req, res, _) => {
-    const event = new Event({...req.body})
+    const event = new Event({...req.body.payload})
     const newEvent = await repository.add(event)
 
     res.status(201).json({ message: 'Event created', data: newEvent })

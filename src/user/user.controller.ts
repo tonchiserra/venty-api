@@ -1,15 +1,37 @@
 import { ExpressMiddleware } from '../config/AppInterface.js'
 import { UserRepository } from './user.repository.js'
-import { User } from './user.entity.js'
+import { User, IUser} from './user.entity.js'
 
 const repository = new UserRepository()
 
-const sanitizeInput: ExpressMiddleware = async (_, __, next) => {
+const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
+    const sanitizedInput: IUser = {
+        id: req.body.id,
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        location: req.body.location,
+        role: req.body.role,
+        description: req.body.description,
+        avatar: req.body.avatar,
+        instagram: req.body.instagram,
+        contactLink: req.body.contactLink,
+        events: req.body.events
+    }
+
+    Object.keys(sanitizedInput).forEach((key) => {
+        if (Object(sanitizedInput)[key] === undefined) {
+            delete Object(sanitizedInput)[key]
+        }
+    })
+
+    req.body.payload = sanitizedInput
+    
     next()
 }
 
 const add: ExpressMiddleware = async (req, res, _) => {
-    const user = new User({...req.body})
+    const user = new User({...req.body.payload})
     const newUser = await repository.add(user)
 
     res.status(201).json({ message: 'User created', data: newUser })
