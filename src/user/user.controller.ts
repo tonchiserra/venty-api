@@ -1,6 +1,7 @@
 import { ExpressMiddleware } from '../config/AppInterface.js'
 import { UserRepository } from './user.repository.js'
 import { User, IUser} from './user.entity.js'
+import uuid4 from "uuid4"
 
 const repository = new UserRepository()
 
@@ -32,6 +33,7 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 
 const add: ExpressMiddleware = async (req, res, _) => {
     const user = new User({...req.body.payload})
+    user.id = uuid4()
     const newUser = await repository.add(user)
 
     res.status(201).json({ message: 'User created', data: newUser })

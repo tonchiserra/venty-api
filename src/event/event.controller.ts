@@ -1,6 +1,7 @@
 import { ExpressMiddleware } from '../config/AppInterface.js'
 import { EventRepository } from './event.repository.js'
 import { Event, IEvent, IEventDate } from './event.entity.js'
+import uuid4 from "uuid4"
 
 const repository = new EventRepository()
 
@@ -8,9 +9,9 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
     const sanitizedDates: IEventDate[] = !!!req.body.dates ? undefined : req.body.dates.map((date: IEventDate) => {
         let sanitizedDate: IEventDate = {
             id: date.id,
-            date: new Date(date.date),
-            startsAt: new Date(date.startsAt),
-            endsAt: new Date(date.endsAt),
+            date: date.date,
+            startsAt: date.startsAt,
+            endsAt: date.endsAt,
             totalTickets: date.totalTickets,
             availableTickets: date.availableTickets,
             price: date.price
@@ -45,6 +46,7 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 
 const add: ExpressMiddleware = async (req, res, _) => {
     const event = new Event({...req.body.payload})
+    event.id = uuid4()
     const newEvent = await repository.add(event)
 
     res.status(201).json({ message: 'Event created', data: newEvent })

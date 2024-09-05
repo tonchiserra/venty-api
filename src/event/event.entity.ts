@@ -1,8 +1,8 @@
 export interface IEventDate {
     id:                 string
-    date:               Date
-    startsAt:           Date
-    endsAt:             Date
+    date:               string
+    startsAt:           string
+    endsAt:             string
     totalTickets:       number
     availableTickets:   number
     price?:             number

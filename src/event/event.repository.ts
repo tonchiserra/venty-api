@@ -25,7 +25,7 @@ export class EventRepository implements Repository<Event> {
         const getCommand = new GetCommand({
             TableName: this.tableName,
             Key: {
-                id: item.id
+                PKevents: item.id
             }
         })
 
