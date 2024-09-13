@@ -47,7 +47,7 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 const add: ExpressMiddleware = async (req, res, _) => {
     const event = new Event({...req.body.payload})
     event.id = uuid4()
-    const newEvent = await repository.add(event)
+    const newEvent = await repository.add(Object.assign({}, event))
 
     res.status(201).json({ message: 'Event created', data: newEvent })
 }
@@ -71,7 +71,7 @@ const getAll: ExpressMiddleware = async (_, res, __) => {
 
 const update: ExpressMiddleware = async (req, res, __) => {
     const event = new Event({...req.body.payload})
-    const newEvent = await repository.update(event)
+    const newEvent = await repository.update(Object.assign({}, event))
 
     if(!!!newEvent) return res.status(404).json({ message: 'Event not found' })
     
