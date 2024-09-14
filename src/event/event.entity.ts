@@ -1,5 +1,4 @@
 export interface IEventDate {
-    id:                 string
     date:               string
     startsAt:           string
     endsAt:             string
@@ -16,9 +15,8 @@ export interface IEvent {
     dates:              IEventDate[]
     location:           string
     companyId:          string
+    cta:                string
     categories?:        string[]
-    status?:            string[]
-    cta?:               string
 }
 
 export class Event implements IEvent {
@@ -29,9 +27,8 @@ export class Event implements IEvent {
     public dates: IEventDate[]
     public location: string
     public companyId: string
+    public cta: string
     public categories?: string[]
-    public status?: string[]
-    public cta?: string
 
     constructor(data: any) {
         this.id = data.id
@@ -41,8 +38,7 @@ export class Event implements IEvent {
         this.dates = data.dates
         this.location = data.location
         this.companyId = data.companyId
-        this.categories = data.categories
-        this.status = data.status
         this.cta = data.cta
+        this.categories = data.categories
     }
 }
