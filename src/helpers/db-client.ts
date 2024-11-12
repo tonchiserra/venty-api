@@ -1,6 +1,7 @@
 import { config } from "../config/config.js"
 import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
+import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: config.FIREBASE.API_KEY,
@@ -14,5 +15,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 
 const db = getFirestore(app)
+const gs = getStorage(app, `gs://${config.FIREBASE.STORAGE_BUCKET}`)
 
-export { db }
+export { db, gs }

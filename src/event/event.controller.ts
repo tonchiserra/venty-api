@@ -42,6 +42,9 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 
 const add: ExpressMiddleware = async (req, res, _) => {
     const event = new Event({...req.body.payload})
+
+    await repository.addImages(event.images)
+
     event.id = uuid4()
     const newEvent = await repository.add(Object.assign({}, event))
 
