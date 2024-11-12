@@ -1,15 +1,20 @@
 import { config } from "../config/config.js"
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb"
-import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb"
+import { initializeApp } from "firebase/app"
+import { getFirestore } from "firebase/firestore"
+import { getStorage } from "firebase/storage"
 
-const dbClient = new DynamoDBClient({
-    region: config.AWS.REGION,
-    credentials: {
-        accessKeyId: config.AWS.AWS_ACCESS_KEY,
-        secretAccessKey: config.AWS.AWS_SECRET_ACCESS_KEY
-    }
-})
+const firebaseConfig = {
+  apiKey: config.FIREBASE.API_KEY,
+  authDomain: config.FIREBASE.AUTH_DOMAIN,
+  projectId: config.FIREBASE.PROJECT_ID,
+  storageBucket: config.FIREBASE.STORAGE_BUCKET,
+  messagingSenderId: config.FIREBASE.MESSAGING_SENDER_ID,
+  appId: config.FIREBASE.APP_ID
+}
 
-const dynamo = DynamoDBDocumentClient.from(dbClient)
+const app = initializeApp(firebaseConfig)
 
-export { dynamo }
+const db = getFirestore(app)
+const gs = getStorage(app, `gs://${config.FIREBASE.STORAGE_BUCKET}`)
+
+export { db, gs }
