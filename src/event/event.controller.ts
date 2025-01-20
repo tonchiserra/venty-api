@@ -6,7 +6,7 @@ import uuid4 from "uuid4"
 const repository = new EventRepository()
 
 const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
-    const sanitizedDates: IEventDate[] = !!!req.body.dates ? undefined : req.body.dates.reduce((acc:any, date: any) => {
+    const sanitizedDates: IEventDate[] = !!!req.body.dates ? [] : req.body.dates.reduce((acc: any, date: any) => {
         for (const key in date) {
             if(!!!date[key]) delete date[key]
         }
@@ -17,12 +17,14 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
         return acc     
     }, [])
 
+    const sanitizedImages: any[] = !!!req.body.images ? [] : req.body.images.filter((image: any) => !!image.image).map((image: any) => image.image)
+
     const sanitizedInput: IEvent = {
         id: req.body.id ?? '',
         title: req.body.title ?? '',
         description: req.body.description ?? '',
-        images: req.body.images ?? [],
-        dates: sanitizedDates ?? [],
+        images: sanitizedImages,
+        dates: sanitizedDates,
         location: req.body.location ?? '',
         companyId: req.body.companyId ?? '',
         categories: req.body.categories ?? [],
@@ -42,8 +44,6 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 
 const add: ExpressMiddleware = async (req, res, _) => {
     const event = new Event({...req.body.payload})
-
-    await repository.addImages(event.images)
 
     event.id = uuid4()
     const newEvent = await repository.add(Object.assign({}, event))
