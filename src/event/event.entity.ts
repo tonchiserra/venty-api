@@ -1,3 +1,8 @@
+export interface IOwner {
+    name: string
+    picture: string
+}
+
 export interface IEventDate {
     date:               string
     startsAt:           string
@@ -16,6 +21,7 @@ export interface IEvent {
     location:           string
     companyId:          string
     cta:                string
+    owner:              IOwner
     categories?:        string[]
 }
 
@@ -28,6 +34,7 @@ export class Event implements IEvent {
     public location: string
     public companyId: string
     public cta: string
+    public owner: IOwner
     public categories?: string[]
 
     constructor(data: any) {
@@ -39,6 +46,7 @@ export class Event implements IEvent {
         this.location = data.location
         this.companyId = data.companyId
         this.cta = data.cta
+        this.owner = data.owner
         this.categories = data.categories
     }
 }

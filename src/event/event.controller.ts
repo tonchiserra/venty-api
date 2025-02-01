@@ -28,7 +28,8 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
         location: req.body.location ?? '',
         companyId: req.body.companyId ?? '',
         categories: req.body.categories ?? [],
-        cta: req.body.cta ?? ''
+        cta: req.body.cta ?? '',
+        owner: req.body.owner ?? {},
     }
 
     Object.keys(sanitizedInput).forEach((key) => {
