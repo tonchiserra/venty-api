@@ -4,6 +4,7 @@ import serverless from 'serverless-http'
 import multer from 'multer'
 
 import { config } from './config/config.js'
+import { checkJwt } from './helpers/checkJwt.js'
 import { eventRouter } from './event/event.routes.js'
 import { userRouter } from './user/user.routes.js'
 import { uploadImages } from './helpers/images.js'
@@ -30,8 +31,8 @@ class Server {
 
     private routes() {
         this.app.use('/events', eventRouter)
-        this.app.use('/users', userRouter)
-        this.app.post('/images', upload.any(), uploadImages)
+        // this.app.use('/users', userRouter)
+        this.app.post('/images', checkJwt, upload.any(), uploadImages)
         this.app.use('/*', (_, res) => res.sendStatus(404))
     }
 
