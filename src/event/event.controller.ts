@@ -2,6 +2,7 @@ import { ExpressMiddleware } from '../config/AppInterface.js'
 import { EventRepository } from './event.repository.js'
 import { Event, IEvent, IEventDate } from './event.entity.js'
 import uuid4 from "uuid4"
+import { config } from '../config/config.js'
 
 const repository = new EventRepository()
 
@@ -19,6 +20,8 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 
     const sanitizedImages: any[] = !!!req.body.images ? [] : req.body.images.filter((image: any) => !!image.image).map((image: any) => image.image)
 
+    const coords: string[] = await getCoords(req.body.location) ?? []
+
     const sanitizedInput: IEvent = {
         id: req.body.id ?? '',
         title: req.body.title ?? '',
@@ -26,6 +29,7 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
         images: sanitizedImages,
         dates: sanitizedDates,
         location: req.body.location ?? '',
+        coords: coords,
         companyId: req.body.companyId ?? '',
         categories: req.body.categories ?? [],
         cta: req.body.cta ?? '',
@@ -83,6 +87,22 @@ const remove: ExpressMiddleware = async (req, res, _) => {
     const event = await repository.remove({ id })
     
     res.status(200).json({ message: 'Event deleted', data: event })
+}
+
+const getCoords = async (location: string) => {
+    if(!!!location) return []
+
+    try {
+        const response = await fetch(`https://geocode.maps.co/search?q=${location}&api_key=${config.GEOCODE.API_KEY}`)
+        const data: any = await response.json()
+
+        if(!!!data || !!!data[0]) return []
+
+        return [data[0].lat, data[0].lon]
+
+    }catch(err) {
+        console.log(err)
+    }
 }
 
 export { sanitizeInput, add, getOne, getAll, update, remove }

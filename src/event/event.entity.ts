@@ -19,6 +19,7 @@ export interface IEvent {
     images:             string[]
     dates:              IEventDate[]
     location:           string
+    coords:             string[]
     companyId:          string
     cta:                string
     owner:              IOwner
@@ -32,6 +33,7 @@ export class Event implements IEvent {
     public images: string[]
     public dates: IEventDate[]
     public location: string
+    public coords: string[]
     public companyId: string
     public cta: string
     public owner: IOwner
@@ -44,6 +46,7 @@ export class Event implements IEvent {
         this.images = data.images
         this.dates = data.dates
         this.location = data.location
+        this.coords = data.coords
         this.companyId = data.companyId
         this.cta = data.cta
         this.owner = data.owner
