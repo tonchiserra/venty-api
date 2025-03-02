@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import serverless from 'serverless-http'
+// import serverless from 'serverless-http'
 import multer from 'multer'
 
 import { config } from './config/config.js'
@@ -44,6 +44,6 @@ class Server {
 }
 
 const server = new Server()
-if(config.APP.IS_DEV) server.listen()
+server.listen()
 
-export const handler = serverless(server.app)
+// export const handler = serverless(server.app)
