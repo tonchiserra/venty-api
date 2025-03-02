@@ -2,11 +2,12 @@ import { ExpressMiddleware } from '../config/AppInterface.js'
 import { EventRepository } from './event.repository.js'
 import { Event, IEvent, IEventDate } from './event.entity.js'
 import uuid4 from "uuid4"
+import { config } from '../config/config.js'
 
 const repository = new EventRepository()
 
 const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
-    const sanitizedDates: IEventDate[] = !!!req.body.dates ? undefined : req.body.dates.reduce((acc:any, date: any) => {
+    const sanitizedDates: IEventDate[] = !!!req.body.dates ? [] : req.body.dates.reduce((acc: any, date: any) => {
         for (const key in date) {
             if(!!!date[key]) delete date[key]
         }
@@ -17,16 +18,20 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
         return acc     
     }, [])
 
+    const sanitizedImages: any[] = !!!req.body.images ? [] : req.body.images.filter((image: any) => !!image.image).map((image: any) => image.image)
+
     const sanitizedInput: IEvent = {
         id: req.body.id ?? '',
         title: req.body.title ?? '',
         description: req.body.description ?? '',
-        images: req.body.images ?? [],
-        dates: sanitizedDates ?? [],
+        images: sanitizedImages,
+        dates: sanitizedDates,
         location: req.body.location ?? '',
+        coords: req.body.coords ?? {},
         companyId: req.body.companyId ?? '',
         categories: req.body.categories ?? [],
-        cta: req.body.cta ?? ''
+        cta: req.body.cta ?? '',
+        owner: req.body.owner ?? {},
     }
 
     Object.keys(sanitizedInput).forEach((key) => {
@@ -43,8 +48,6 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 const add: ExpressMiddleware = async (req, res, _) => {
     const event = new Event({...req.body.payload})
 
-    await repository.addImages(event.images)
-
     event.id = uuid4()
     const newEvent = await repository.add(Object.assign({}, event))
 
@@ -60,8 +63,10 @@ const getOne: ExpressMiddleware = async (req, res, _) => {
     res.status(200).json({ message: 'Event found', data: event })
 }
 
-const getAll: ExpressMiddleware = async (_, res, __) => {
-    const allEvents = await repository.getAll()
+const getAll: ExpressMiddleware = async (req, res, __) => {
+    const lat = `${req.query.latitude ?? 0}`
+    const lng = `${req.query.longitude ?? 0}`
+    const allEvents = await repository.getAll(lat, lng)
     
     if(!!!allEvents || !!!allEvents.length) return res.status(404).json({ message: 'No events found' })
 

@@ -1,10 +1,15 @@
 import express from 'express'
 import cors from 'cors'
 import serverless from 'serverless-http'
+import multer from 'multer'
 
 import { config } from './config/config.js'
+import { checkJwt } from './helpers/checkJwt.js'
 import { eventRouter } from './event/event.routes.js'
 import { userRouter } from './user/user.routes.js'
+import { uploadImages } from './helpers/images.js'
+
+const upload = multer({ storage: multer.memoryStorage() })
 
 class Server {
     public app: express.Application
@@ -26,7 +31,8 @@ class Server {
 
     private routes() {
         this.app.use('/events', eventRouter)
-        this.app.use('/users', userRouter)
+        // this.app.use('/users', userRouter)
+        this.app.post('/images', checkJwt, upload.any(), uploadImages)
         this.app.use('/*', (_, res) => res.sendStatus(404))
     }
 
