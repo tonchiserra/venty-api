@@ -20,8 +20,6 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
 
     const sanitizedImages: any[] = !!!req.body.images ? [] : req.body.images.filter((image: any) => !!image.image).map((image: any) => image.image)
 
-    const coords: string[] = await getCoords(req.body.location) ?? []
-
     const sanitizedInput: IEvent = {
         id: req.body.id ?? '',
         title: req.body.title ?? '',
@@ -29,7 +27,7 @@ const sanitizeInput: ExpressMiddleware = async (req, _, next) => {
         images: sanitizedImages,
         dates: sanitizedDates,
         location: req.body.location ?? '',
-        coords: coords,
+        coords: req.body.coords ?? {},
         companyId: req.body.companyId ?? '',
         categories: req.body.categories ?? [],
         cta: req.body.cta ?? '',
@@ -65,8 +63,10 @@ const getOne: ExpressMiddleware = async (req, res, _) => {
     res.status(200).json({ message: 'Event found', data: event })
 }
 
-const getAll: ExpressMiddleware = async (_, res, __) => {
-    const allEvents = await repository.getAll()
+const getAll: ExpressMiddleware = async (req, res, __) => {
+    const lat = `${req.query.latitude ?? 0}`
+    const lng = `${req.query.longitude ?? 0}`
+    const allEvents = await repository.getAll(lat, lng)
     
     if(!!!allEvents || !!!allEvents.length) return res.status(404).json({ message: 'No events found' })
 
@@ -87,22 +87,6 @@ const remove: ExpressMiddleware = async (req, res, _) => {
     const event = await repository.remove({ id })
     
     res.status(200).json({ message: 'Event deleted', data: event })
-}
-
-const getCoords = async (location: string) => {
-    if(!!!location) return []
-
-    try {
-        const response = await fetch(`https://geocode.maps.co/search?q=${location}&api_key=${config.GEOCODE.API_KEY}`)
-        const data: any = await response.json()
-
-        if(!!!data || !!!data[0]) return []
-
-        return [data[0].lat, data[0].lon]
-
-    }catch(err) {
-        console.log(err)
-    }
 }
 
 export { sanitizeInput, add, getOne, getAll, update, remove }

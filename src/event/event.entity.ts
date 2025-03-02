@@ -19,7 +19,7 @@ export interface IEvent {
     images:             string[]
     dates:              IEventDate[]
     location:           string
-    coords:             string[]
+    coords:             { lat: string, lng: string }
     companyId:          string
     cta:                string
     owner:              IOwner
@@ -33,7 +33,7 @@ export class Event implements IEvent {
     public images: string[]
     public dates: IEventDate[]
     public location: string
-    public coords: string[]
+    public coords: { lat: string, lng: string }
     public companyId: string
     public cta: string
     public owner: IOwner
